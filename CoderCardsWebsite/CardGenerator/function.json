@@ -1,6 +1,6 @@
 ﻿{
-  "scriptFile": "..\\bin\\CoderCardsWebsite.dll",
-  "entryPoint": "CoderCardsLibrary.CardGenerator.Run",
+  "scriptFile": "..\\bin\\CodermonCards.dll",
+  "entryPoint": "CodermonCards.CodermonCardsGenerator.Run",
   "bindings": [
     {
       "name": "image",

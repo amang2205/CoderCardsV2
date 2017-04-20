@@ -13,8 +13,8 @@
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CoderCardsWebsite</RootNamespace>
-    <AssemblyName>CoderCardsWebsite</AssemblyName>
+    <RootNamespace>CodermonCards</RootNamespace>
+    <AssemblyName>CodermonCards</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
@@ -103,10 +103,10 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="appsettings.json" />
     <Content Include="CardGenerator\function.json" />
     <Content Include="packages.config" />
     <Content Include="host.json" />
+    <Content Include="appsettings.json" />
     <None Include="Properties\PublishProfiles\donnam-vs-demo2 - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\Package.pubxml" />
     <None Include="Web.Debug.config">
@@ -117,10 +117,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="assets\angry.png" />
-    <Content Include="assets\happy.png" />
-    <Content Include="assets\neutral.png" />
-    <Content Include="assets\surprised.png" />
+    <EmbeddedResource Include="assets\angry.png" />
+    <EmbeddedResource Include="assets\happy.png" />
+    <EmbeddedResource Include="assets\neutral.png" />
+    <EmbeddedResource Include="assets\surprised.png" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>

@@ -1,36 +1,33 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using Microsoft.Azure.WebJobs.Host;
 using Newtonsoft.Json;
-using System.IO;
+using System;
 using System.Drawing;
-using Microsoft.Azure.WebJobs.Host;
+using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net;
+using System.Threading.Tasks;
+using static CodermonCards.ImageHelpers;
 
-using static CoderCardsLibrary.ImageHelpers;
-
-namespace CoderCardsLibrary
+namespace CodermonCards
 {
-    public class CardGenerator
+    public class CodermonCardsGenerator
     {
-        private const string EMOTION_API_URI      = "https://api.projectoxford.ai/emotion/v1.0/recognize";
-        private const string EMOTION_API_KEY_NAME = "EmotionAPIKey";
-        private const string ASSETS_FOLDER        = "assets";
-
         public static async Task Run(byte[] image, string filename, Stream outputBlob, TraceWriter log)
         {
             string result = await CallEmotionAPI(image);
             log.Info(result);
 
-            if (String.IsNullOrEmpty(result)) {
+            if (String.IsNullOrEmpty(result))
+            {
                 log.Error("No result from Emotion API");
                 return;
             }
 
             var imageData = JsonConvert.DeserializeObject<Face[]>(result);
 
-            if (imageData.Length == 0) {
+            if (imageData.Length == 0)
+            {
                 log.Error("No face detected in image");
                 return;
             }
@@ -60,49 +57,44 @@ namespace CoderCardsLibrary
             score = scores.Neutral;
             const int angerBoost = 2, happyBoost = 4;
 
-            if (scores.Surprise > 10) {
+            if (scores.Surprise > 10)
+            {
                 cardBack = "surprised.png";
                 score = scores.Surprise;
             }
-            else if (scores.Anger > 10) {
+            else if (scores.Anger > 10)
+            {
                 cardBack = "angry.png";
                 score = scores.Anger * angerBoost;
             }
-            else if (scores.Happiness > 50) {
+            else if (scores.Happiness > 50)
+            {
                 cardBack = "happy.png";
                 score = scores.Happiness * happyBoost;
             }
 
-            return Image.FromFile(GetFullImagePath(cardBack));
+            var thisExe = System.Reflection.Assembly.GetExecutingAssembly();
+            var file = thisExe.GetManifestResourceStream($"CodermonCards.CardGenerator.{cardBack}");
+
+            return Image.FromStream(file);
         }
 
         static async Task<string> CallEmotionAPI(byte[] image)
         {
             var client = new HttpClient();
-
             var content = new StreamContent(new MemoryStream(image));
-            var key = Environment.GetEnvironmentVariable(EMOTION_API_KEY_NAME);
+            var key = Environment.GetEnvironmentVariable("EMOTION_API_KEY_NAME");
 
             client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", key);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-            var httpResponse = await client.PostAsync(EMOTION_API_URI, content);
+            var httpResponse = await client.PostAsync(Environment.GetEnvironmentVariable("EMOTION_API_URI"), content);
 
-            if (httpResponse.StatusCode == HttpStatusCode.OK) {
+            if (httpResponse.StatusCode == HttpStatusCode.OK)
+            {
                 return await httpResponse.Content.ReadAsStringAsync();
             }
 
             return null;
-        }
-
-        static string GetFullImagePath(string filename)
-        {
-            var path = Path.Combine(
-                Environment.GetEnvironmentVariable("HOME"), 
-                Environment.GetEnvironmentVariable("SITE_PATH"), 
-                ASSETS_FOLDER,
-                filename);
-
-            return Path.GetFullPath(path);
         }
     }
 }
